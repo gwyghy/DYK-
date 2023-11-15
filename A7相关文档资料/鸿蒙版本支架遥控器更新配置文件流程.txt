@@ -1,0 +1,24 @@
+更新遥控器程序说明：
+在keil中仿真把内存数据导出来，修改配置文件结构体为如下模式
+//配置文件信息
+__packed typedef struct
+{
+ 	u32 u32Size;
+	ActionInfoHead Head;
+	ActionMess	Body[ACTION_NUM_MAX];
+}ACTION_INFO;
+另外
+结构体中的u32Size为0x20000000,在初始化加载配置文件中的内容时，需要加上那四个字节中的内容，如下+sizeof(ActionInformation.u32Size)
+V4ykqParaSize = ActionInformation.Head.TotalAction*sizeof(ActionMess)+sizeof(ActionInfoHead)+sizeof(ActionInformation.u32Size);
+memcpy(V4ykqParaQueue,&ActionInformation,V4ykqParaSize);
+然后使用命令
+SAVE "C:/Users/ghy/Desktop/ykq.hex" startaddr,startaddr+V4ykqParaSize
+
+此时会生成一个hex文件，需要借用笑脸工具，将hex文件转化成Bin,
+
+设备类型设置为: V2+键盘模块_电液控
+
+目标板CPU类型为：STM32L4XX
+
+版本号可根据实际情况进行修改，程序基地址为0x0;
+将生成的bin文件放到程序棒中，然后使用适配器供电，之后在遥控器中选择同步配置，即可完成遥控器配置文件的同步过程
